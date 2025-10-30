@@ -11,6 +11,7 @@ import orderRoutes from './modules/orderRoutes.js';
 import authRoutes from './modules/authRoutes.js';
 import adminRoutes from './modules/adminRoutes.js';
 import googleAuthRoutes from './modules/googleAuthRoutes.js';
+import paymentRoutes from './modules/paymentRoutes.js';
 
 export const registerRoutes = (app: Express) => {
   // Health check route
@@ -59,6 +60,7 @@ export const registerRoutes = (app: Express) => {
   app.use('/api/v1/auth', authRoutes);
   app.use('/api/v1/auth/google', googleAuthRoutes);
   app.use('/api/v1/admin', adminRoutes);
+  app.use('/api/v1/payment', paymentRoutes);
 
   // Serve uploaded files
   app.use('/api/uploads', express.static(path.join(process.cwd(), 'uploads')));
