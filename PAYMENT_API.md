@@ -1,6 +1,6 @@
 # Paytm Payment Gateway API Documentation
 
-This API provides integration with Paytm Payment Gateway for UPI and Rupay card transactions.
+This API provides integration with Paytm Payment Gateway for UPI and RuPay card transactions.
 
 ## Setup
 
@@ -81,11 +81,13 @@ PAYTM_ENVIRONMENT=STAGING
 }
 ```
 
-### 3. Initiate Card Payment
+### 3. Initiate RuPay Card Payment
 
 **Endpoint:** `POST /api/v1/payment/initiate/card`
 
 **Authentication:** Required (JWT Token)
+
+**Description:** Initiate a payment transaction using RuPay card. This endpoint supports RuPay debit and credit cards.
 
 **Request Body:**
 ```json
@@ -100,7 +102,7 @@ PAYTM_ENVIRONMENT=STAGING
 ```json
 {
   "success": true,
-  "message": "Card payment initiated successfully",
+  "message": "RuPay card payment initiated successfully",
   "data": {
     "orderId": "CARD_xyz789_1234567890",
     "txnToken": "transaction_token_from_paytm",
@@ -220,9 +222,14 @@ PAYTM_ENVIRONMENT=STAGING
 
 | Status | Description |
 |--------|-------------|
-| TXN_SUCCESS | Transaction successful |
+| TXN_SUCCESS | Transaction completed successfully |
 | TXN_FAILURE | Transaction failed |
-| PENDING | Transaction pending |
+| PENDING | Transaction is pending |
+| TXN_PROCESSING | Transaction is being processed |
+| OPEN | Transaction initiated but not completed |
+| REFUND_SUCCESS | Refund completed successfully |
+| REFUND_PENDING | Refund is pending |
+| REFUND_FAILURE | Refund failed |
 
 ## Security Considerations
 
@@ -242,8 +249,11 @@ PAYTM_ENVIRONMENT=STAGING
 
 1. Use Paytm's staging environment: `PAYTM_ENVIRONMENT=STAGING`
 2. Use test credentials provided by Paytm
-3. Use test UPI IDs and card numbers provided by Paytm
-4. Refer to [Paytm Testing Documentation](https://developer.paytm.com/docs/testing-integration/)
+3. For UPI testing: Use test UPI IDs provided by Paytm (e.g., `test@paytm`)
+4. For RuPay card testing: Use RuPay test card numbers from NPCI or Paytm's staging environment
+   - Contact Paytm support for specific RuPay test card credentials
+   - Alternatively, use generic test card numbers for staging: `5123456789012346` (MasterCard) or similar
+5. Refer to [Paytm Testing Documentation](https://developer.paytm.com/docs/testing-integration/)
 
 ### Sample Test Flow
 
