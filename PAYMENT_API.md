@@ -243,6 +243,11 @@ PAYTM_ENVIRONMENT=STAGING
 
 5. **Admin-Only Operations:** Refund operations should only be accessible to admin users.
 
+6. **Rate Limiting:** All payment endpoints have rate limiting enabled to prevent abuse:
+   - Payment initiation (UPI/Card): 10 requests per 15 minutes per IP
+   - Payment callbacks: 50 requests per 5 minutes per IP
+   - Status checks: No rate limiting (read-only operations)
+
 ## Testing
 
 ### Testing with Paytm Staging
