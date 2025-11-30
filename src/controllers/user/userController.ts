@@ -4,6 +4,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { AuthenticatedRequest } from '../../middleware/auth.js';
 import { ResponseUtil, ERROR_CODES, logger, asyncHandler } from '../../utils/index.js';
+import NotificationService from '../../services/NotificationService.js';
+import { NOTIFICATION_TYPES, NOTIFICATION_PRIORITY } from '../../config/constants.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || "change_me_in_production";
 
@@ -12,7 +14,7 @@ export class UserController {
   static register = asyncHandler(async (req: Request, res: Response) => {
     const { name, email, password, phone, addresses } = req.body;
 
-    logger.info('User registration attempt', {
+    logger.info('User registration attempt\n\n', {
       requestId: req.requestId,
       email,
       ip: req.ip
@@ -44,7 +46,7 @@ export class UserController {
     };
 
     const user = await userHelper.createUser(userData);
-    
+
     // Generate JWT token
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
@@ -56,6 +58,18 @@ export class UserController {
       requestId: req.requestId,
       userId: user.id,
       email: user.email
+    });
+
+    console.log("user created successfull, proceeding with notification...")
+
+    // Send welcome notification
+    await NotificationService.create({
+      userId: user.id,
+      type: NOTIFICATION_TYPES.SYSTEM,
+      title: 'Welcome to Grab-itt! 🎉',
+      message: 'We are excited to have you on board. Explore our products and start shopping!',
+      priority: NOTIFICATION_PRIORITY.HIGH,
+      data: { event: 'welcome' }
     });
 
     ResponseUtil.success(
@@ -196,7 +210,7 @@ export class UserController {
 
     const { name, phone, addresses } = req.body;
     const updates: any = {};
-    
+
     if (name) updates.name = name;
     if (phone !== undefined) updates.phone = phone;
     if (addresses) updates.addresses = addresses;

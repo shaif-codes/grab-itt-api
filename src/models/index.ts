@@ -4,16 +4,42 @@ import Product from './Product.js';
 import Order from './Order.js';
 import Category from './Category.js';
 import Offer from './Offer.js';
+import Notification from './Notification.js';
+import NotificationPreference from './NotificationPreference.js';
 
-// Define associations
-User.hasMany(Order, { foreignKey: 'userId', as: 'orders' });
-Order.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+// Define relationships
+export const initializeModels = () => {
+  // User relationships
+  User.hasMany(Order, { foreignKey: 'userId', as: 'orders' });
+  Order.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+  // Product relationships
+  Product.belongsTo(Category, { foreignKey: 'categoryId', as: 'categoryData' });
+  Category.hasMany(Product, { foreignKey: 'categoryId', as: 'products' });
+
+  // Offer relationships
+  Offer.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+  Product.hasMany(Offer, { foreignKey: 'productId', as: 'offers' });
+
+  // Notification relationships
+  Notification.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+  User.hasMany(Notification, { foreignKey: 'userId', as: 'notifications' });
+
+  NotificationPreference.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+  User.hasOne(NotificationPreference, { foreignKey: 'userId', as: 'notificationPreference' });
+
+  console.log('✓ Model relationships initialized');
+};
 
 // Initialize database connection
 export const initializeDatabase = async () => {
   try {
     await sequelize.authenticate();
     console.log('✅ Database connection established successfully.');
+
+    // Initialize model relationships
+    initializeModels();
+
     return true;
   } catch (error) {
     console.error('❌ Unable to connect to the database:', error);
@@ -34,5 +60,15 @@ export const syncDatabase = async (force: boolean = false) => {
   }
 };
 
-export { sequelize, User, Product, Order, Category, Offer };
+export {
+  sequelize,
+  User,
+  Product,
+  Order,
+  Category,
+  Offer,
+  Notification,
+  NotificationPreference
+};
+
 export default sequelize;

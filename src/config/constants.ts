@@ -1,3 +1,59 @@
+// WebSocket event names - centralized for maintainability
+export const WS_EVENTS = {
+    // Connection lifecycle
+    CONNECTION: 'connection',
+    DISCONNECT: 'disconnect',
+    CLOSE: 'close',
+    ERROR: 'error',
+    MESSAGE: 'message',
+
+    // Client → Server events
+    PING: 'PING',
+    MARK_READ: 'MARK_READ',
+    SUBSCRIBE: 'SUBSCRIBE',
+    UNSUBSCRIBE: 'UNSUBSCRIBE',
+
+    // Server → Client events
+    CONNECTED: 'CONNECTED',
+    PONG: 'PONG',
+    NOTIFICATION: 'NOTIFICATION',
+    NOTIFICATION_READ: 'NOTIFICATION_READ',
+    ALL_NOTIFICATIONS_READ: 'ALL_NOTIFICATIONS_READ',
+    BATCH_NOTIFICATIONS: 'BATCH_NOTIFICATIONS',
+} as const;
+
+// Notification types for e-commerce
+export const NOTIFICATION_TYPES = {
+    ORDER: 'ORDER',
+    PAYMENT: 'PAYMENT',
+    SHIPPING: 'SHIPPING',
+    DELIVERY: 'DELIVERY',
+    MARKETING: 'MARKETING',
+    SYSTEM: 'SYSTEM',
+    SOCIAL: 'SOCIAL',
+} as const;
+
+// Priority levels
+export const NOTIFICATION_PRIORITY = {
+    LOW: 'LOW',
+    MEDIUM: 'MEDIUM',
+    HIGH: 'HIGH',
+    CRITICAL: 'CRITICAL',
+} as const;
+
+// Delivery channels
+export const NOTIFICATION_CHANNELS = {
+    IN_APP: 'IN_APP',
+    EMAIL: 'EMAIL',
+    PUSH: 'PUSH',
+    SMS: 'SMS',
+} as const;
+
+// Type helpers for TypeScript
+export type NotificationType = keyof typeof NOTIFICATION_TYPES;
+export type NotificationPriority = keyof typeof NOTIFICATION_PRIORITY;
+export type NotificationChannel = keyof typeof NOTIFICATION_CHANNELS;
+
 export const CONSTANTS = {
     firebaseConfig: {
         // Client-side configuration
@@ -9,7 +65,7 @@ export const CONSTANTS = {
         appId: process.env.FIREBASE_APP_ID,
         measurementId: process.env.FIREBASE_MEASUREMENT_ID
     },
-    
+
     // Server-side configuration
     firebaseAdmin: {
         projectId: process.env.FIREBASE_PROJECT_ID,

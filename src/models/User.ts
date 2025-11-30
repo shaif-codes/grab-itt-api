@@ -27,21 +27,21 @@ export interface UserAttributes {
   updatedAt: Date;
 }
 
-export interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'passwordHash' | 'firebaseUid' | 'googleId' | 'profilePictureUrl' | 'phone' | 'addresses'> {}
+export interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'passwordHash' | 'firebaseUid' | 'googleId' | 'profilePictureUrl' | 'phone' | 'addresses'> { }
 
 export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
-  public id!: string;
-  public name!: string;
-  public email!: string;
-  public passwordHash!: string | null;
-  public firebaseUid!: string | null;
-  public provider!: 'email' | 'google' | 'facebook' | 'apple';
-  public googleId!: string | null;
-  public profilePictureUrl!: string | null;
-  public emailVerified!: boolean;
-  public role!: 'customer' | 'admin';
-  public phone!: string | null;
-  public addresses!: Array<{
+  public declare id: string;
+  public declare name: string;
+  public declare email: string;
+  public declare passwordHash: string | null;
+  public declare firebaseUid: string | null;
+  public declare provider: 'email' | 'google' | 'facebook' | 'apple';
+  public declare googleId: string | null;
+  public declare profilePictureUrl: string | null;
+  public declare emailVerified: boolean;
+  public declare role: 'customer' | 'admin';
+  public declare phone: string | null;
+  public declare addresses: Array<{
     label: string;
     line1: string;
     line2?: string;
@@ -51,8 +51,8 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
     phone: string;
     isDefault: boolean;
   }> | null;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public declare readonly createdAt: Date;
+  public declare readonly updatedAt: Date;
 }
 
 User.init(

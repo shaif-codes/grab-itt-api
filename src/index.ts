@@ -1,17 +1,19 @@
 import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
+import http from 'http';
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { registerRoutes } from "./routes/index.js";
 import { initializeDatabase } from "./models/index.js";
-import { 
-  requestIdMiddleware, 
-  requestLoggerMiddleware, 
-  errorHandler, 
+import { WebSocketManager } from "./services/WebSocketManager.js";
+import {
+  requestIdMiddleware,
+  requestLoggerMiddleware,
+  errorHandler,
   notFoundHandler,
-  asyncHandler 
+  asyncHandler
 } from "./utils/index.js";
 // import { seedDatabase } from "./seeders/seedDatabase.js";
 
@@ -44,8 +46,8 @@ app.use(morgan('combined'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
   });
@@ -71,7 +73,7 @@ app.get('/health', (req, res) => {
       const message = err.message || "Internal Server Error";
 
       console.error('Error:', err);
-      res.status(status).json({ 
+      res.status(status).json({
         success: false,
         message,
         ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
@@ -83,10 +85,19 @@ app.get('/health', (req, res) => {
     app.use(errorHandler);
 
     const port = parseInt(process.env.PORT || '5000', 10);
-    app.listen(port, '0.0.0.0', () => {
+
+    // Create HTTP server instance
+    const httpServer = http.createServer(app);
+
+    // Initialize WebSocket server
+    const wsManager = WebSocketManager.getInstance();
+    wsManager.initialize(httpServer);
+
+    httpServer.listen(port, '0.0.0.0', () => {
       console.log(`🚀 Backend server running on http://localhost:${port}`);
       console.log(`📊 Health check: http://localhost:${port}/health`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`📡 WebSocket server: ws://localhost:${port}/ws`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);

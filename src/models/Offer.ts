@@ -11,16 +11,16 @@ export interface OfferAttributes {
   updatedAt: Date;
 }
 
-export interface OfferCreationAttributes extends Optional<OfferAttributes, 'id' | 'createdAt' | 'updatedAt' | 'imageUrl' | 'active'> {}
+export interface OfferCreationAttributes extends Optional<OfferAttributes, 'id' | 'createdAt' | 'updatedAt' | 'imageUrl' | 'active'> { }
 
 export class Offer extends Model<OfferAttributes, OfferCreationAttributes> implements OfferAttributes {
-  public id!: string;
-  public title!: string;
-  public description!: string;
-  public imageUrl!: string | null;
-  public active!: boolean;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public declare id: string;
+  public declare title: string;
+  public declare description: string;
+  public declare imageUrl: string | null;
+  public declare active: boolean;
+  public declare readonly createdAt: Date;
+  public declare readonly updatedAt: Date;
 }
 
 Offer.init(

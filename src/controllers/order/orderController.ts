@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import orderHelper from './orderHelper.js';
 import { AuthenticatedRequest } from '../../middleware/auth.js';
+import NotificationService from '../../services/NotificationService.js';
+import { NOTIFICATION_TYPES, NOTIFICATION_PRIORITY, NOTIFICATION_CHANNELS } from '../../config/constants.js';
 
 const DELIVERY_FEE = parseFloat(process.env.DELIVERY_FEE || "35");
 
@@ -16,7 +18,7 @@ export class OrderController {
       const { items, address, paymentMethod, upiReferenceId } = req.body;
 
       // Calculate totals
-      const subtotal = items.reduce((sum: number, item: any) => 
+      const subtotal = items.reduce((sum: number, item: any) =>
         sum + (parseFloat(item.price) * item.quantity), 0
       );
       const total = subtotal + DELIVERY_FEE;
@@ -35,6 +37,24 @@ export class OrderController {
       };
 
       const order = await orderHelper.createOrder(orderData);
+
+      // Send order confirmation notification
+      await NotificationService.create({
+        userId,
+        type: NOTIFICATION_TYPES.ORDER,
+        title: 'Order Confirmed! 🎉',
+        message: `Your order #${order.id.substring(0, 8)} has been confirmed and is being processed.`,
+        data: {
+          orderId: order.id,
+          amount: order.total,
+          itemCount: items.length,
+        },
+        priority: NOTIFICATION_PRIORITY.HIGH,
+        actionUrl: `/orders/${order.id}`,
+        actionLabel: 'View Order',
+        channels: [NOTIFICATION_CHANNELS.IN_APP, NOTIFICATION_CHANNELS.EMAIL],
+      });
+
       res.status(201).json({ success: true, data: order });
     } catch (error: any) {
       res.status(500).json({ success: false, message: error.message });
@@ -61,7 +81,7 @@ export class OrderController {
     try {
       const { id } = req.params;
       const order = await orderHelper.getOrder(id);
-      
+
       if (!order) {
         return res.status(404).json({ success: false, message: 'Order not found' });
       }
@@ -87,6 +107,49 @@ export class OrderController {
         return res.status(404).json({ success: false, message: 'Order not found' });
       }
 
+      // Send notification based on order status
+      const notificationMap: Record<string, { title: string; message: string; emoji: string }> = {
+        CONFIRMED: {
+          title: 'Order Confirmed',
+          message: `Your order #${id.substring(0, 8)} has been confirmed.`,
+          emoji: '✅',
+        },
+        PROCESSING: {
+          title: 'Order Processing',
+          message: `Your order #${id.substring(0, 8)} is being processed.`,
+          emoji: '⚙️',
+        },
+        SHIPPED: {
+          title: 'Order Shipped',
+          message: `Your order #${id.substring(0, 8)} has been shipped and is on the way!`,
+          emoji: '📦',
+        },
+        DELIVERED: {
+          title: 'Order Delivered',
+          message: `Your order #${id.substring(0, 8)} has been delivered. Enjoy!`,
+          emoji: '🎊',
+        },
+        CANCELLED: {
+          title: 'Order Cancelled',
+          message: `Your order #${id.substring(0, 8)} has been cancelled.`,
+          emoji: '❌',
+        },
+      };
+
+      const notifData = notificationMap[status];
+      if (notifData && updatedOrder.userId) {
+        await NotificationService.create({
+          userId: updatedOrder.userId,
+          type: NOTIFICATION_TYPES.SHIPPING,
+          title: `${notifData.title} ${notifData.emoji}`,
+          message: notifData.message,
+          data: { orderId: id, status },
+          actionUrl: `/orders/${id}`,
+          actionLabel: 'View Order',
+          channels: [NOTIFICATION_CHANNELS.IN_APP, NOTIFICATION_CHANNELS.EMAIL],
+        });
+      }
+
       res.json({ success: true, data: updatedOrder });
     } catch (error: any) {
       res.status(500).json({ success: false, message: error.message });
@@ -97,7 +160,7 @@ export class OrderController {
   static async getAllOrders(req: Request, res: Response) {
     try {
       const { status, page = 1, limit = 20 } = req.query;
-      
+
       const filters: any = {};
       if (status) filters.status = status;
 

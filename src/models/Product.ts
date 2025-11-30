@@ -16,21 +16,21 @@ export interface ProductAttributes {
   updatedAt: Date;
 }
 
-export interface ProductCreationAttributes extends Optional<ProductAttributes, 'id' | 'createdAt' | 'updatedAt' | 'imageUrl' | 'description' | 'isPopular'> {}
+export interface ProductCreationAttributes extends Optional<ProductAttributes, 'id' | 'createdAt' | 'updatedAt' | 'imageUrl' | 'description' | 'isPopular'> { }
 
 export class Product extends Model<ProductAttributes, ProductCreationAttributes> implements ProductAttributes {
-  public id!: string;
-  public name!: string;
-  public category!: 'Groceries' | 'Medicine' | 'Vegetables' | 'Food';
-  public originalPrice!: string;
-  public price!: string;
-  public stock!: number;
-  public isAvailable!: boolean;
-  public imageUrl!: string | null;
-  public description!: string | null;
-  public isPopular!: boolean;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public declare id: string;
+  public declare name: string;
+  public declare category: 'Groceries' | 'Medicine' | 'Vegetables' | 'Food';
+  public declare originalPrice: string;
+  public declare price: string;
+  public declare stock: number;
+  public declare isAvailable: boolean;
+  public declare imageUrl: string | null;
+  public declare description: string | null;
+  public declare isPopular: boolean;
+  public declare readonly createdAt: Date;
+  public declare readonly updatedAt: Date;
 }
 
 Product.init(

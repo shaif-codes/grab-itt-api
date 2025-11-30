@@ -33,19 +33,19 @@ export interface OrderAttributes {
   updatedAt: Date;
 }
 
-export interface OrderCreationAttributes extends Optional<OrderAttributes, 'id' | 'createdAt' | 'updatedAt' | 'upiReferenceId' | 'assignedRiderName' | 'assignedRiderPhone'> {}
+export interface OrderCreationAttributes extends Optional<OrderAttributes, 'id' | 'createdAt' | 'updatedAt' | 'upiReferenceId' | 'assignedRiderName' | 'assignedRiderPhone'> { }
 
 export class Order extends Model<OrderAttributes, OrderCreationAttributes> implements OrderAttributes {
-  public id!: string;
-  public userId!: string;
-  public items!: Array<{
+  public declare id: string;
+  public declare userId: string;
+  public declare items: Array<{
     productId: string;
     nameSnapshot: string;
     price: number;
     originalPrice: number;
     quantity: number;
   }>;
-  public address!: {
+  public declare address: {
     label: string;
     line1: string;
     line2?: string;
@@ -54,17 +54,17 @@ export class Order extends Model<OrderAttributes, OrderCreationAttributes> imple
     pincode: string;
     phone: string;
   };
-  public paymentMethod!: 'COD' | 'UPI';
-  public paymentStatus!: 'PENDING' | 'PAID';
-  public upiReferenceId!: string | null;
-  public status!: 'PENDING' | 'ACCEPTED' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'REJECTED' | 'CANCELLED';
-  public deliveryFee!: string;
-  public subtotal!: string;
-  public total!: string;
-  public assignedRiderName!: string | null;
-  public assignedRiderPhone!: string | null;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public declare paymentMethod: 'COD' | 'UPI';
+  public declare paymentStatus: 'PENDING' | 'PAID';
+  public declare upiReferenceId: string | null;
+  public declare status: 'PENDING' | 'ACCEPTED' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'REJECTED' | 'CANCELLED';
+  public declare deliveryFee: string;
+  public declare subtotal: string;
+  public declare total: string;
+  public declare assignedRiderName: string | null;
+  public declare assignedRiderPhone: string | null;
+  public declare readonly createdAt: Date;
+  public declare readonly updatedAt: Date;
 }
 
 Order.init(

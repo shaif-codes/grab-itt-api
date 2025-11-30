@@ -10,7 +10,7 @@ export interface CategoryAttributes {
   updatedAt: Date;
 }
 
-export interface CategoryCreationAttributes extends Optional<CategoryAttributes, 'id' | 'createdAt' | 'updatedAt' | 'icon' | 'backgroundImageUrl'> {}
+export interface CategoryCreationAttributes extends Optional<CategoryAttributes, 'id' | 'createdAt' | 'updatedAt' | 'icon' | 'backgroundImageUrl'> { }
 
 export class Category extends Model<CategoryAttributes, CategoryCreationAttributes> implements CategoryAttributes {
   public id!: string;
@@ -31,7 +31,6 @@ Category.init(
     name: {
       type: DataTypes.ENUM('Groceries', 'Medicine', 'Vegetables', 'Food'),
       allowNull: false,
-      unique: true,
     },
     icon: {
       type: DataTypes.STRING,
@@ -57,6 +56,12 @@ Category.init(
     modelName: 'Category',
     tableName: 'categories',
     timestamps: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['name']
+      }
+    ]
   }
 );
 

@@ -11,12 +11,13 @@ import orderRoutes from './modules/orderRoutes.js';
 import authRoutes from './modules/authRoutes.js';
 import adminRoutes from './modules/adminRoutes.js';
 import googleAuthRoutes from './modules/googleAuthRoutes.js';
+import notificationRoutes from './notifications.js';
 
 export const registerRoutes = (app: Express) => {
   // Health check route
   app.get('/health', (req, res) => {
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: 'Backend server is running',
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV || 'development'
@@ -43,9 +44,9 @@ export const registerRoutes = (app: Express) => {
   // Config route
   const DELIVERY_FEE = parseFloat(process.env.DELIVERY_FEE || "35");
   app.get('/api/v1/config', (req, res) => {
-    res.json({ 
-      success: true, 
-      data: { 
+    res.json({
+      success: true,
+      data: {
         deliveryFee: DELIVERY_FEE,
         categories: ['Groceries', 'Medicine', 'Vegetables', 'Food']
       }
@@ -53,12 +54,16 @@ export const registerRoutes = (app: Express) => {
   });
 
   // API routes
-  app.use('/api/v1/users', userRoutes);
+  app.use('/api/v1/users', (req, res, next) => {
+    console.log('User routes...............');
+    next();
+  }, userRoutes);
   app.use('/api/v1/products', productRoutes);
   app.use('/api/v1/orders', orderRoutes);
   app.use('/api/v1/auth', authRoutes);
   app.use('/api/v1/auth/google', googleAuthRoutes);
   app.use('/api/v1/admin', adminRoutes);
+  app.use('/api/v1/notifications', notificationRoutes); // Notification routes
 
   // Serve uploaded files
   app.use('/api/uploads', express.static(path.join(process.cwd(), 'uploads')));
